@@ -21,18 +21,16 @@ db.on('error',function(){
    process.exit();
 });
 
-var users = mongoose.Schema({username: String, type: String, token: String});
-var organisers = mongoose.Schema({username: String, Name: String, positon: String});
-var events = mongoose.Schema({eventcode: String, Name: String});
-var sponsors = mongoose.Schema({username: String, Name: String, eventcode: String});
-var participants = mongoose.Schema({username: String, Name: String, eventcode: String});
+var users = mongoose.Schema({username: String, password: String});
+var availBooks = mongoose.Schema({isbn: Number, seller: String, Name: String,author: String, price: Number});
+var soldBooks = mongoose.Schema({isbn: Number, seller: String, buyer: String, Name: String,author: String, price: Number});
+var reqBooks = mongoose.Schema({isbn: Number, seller: String, Name: String,author: String, price: Number});
 
 // compile schema to model
 var user = mongoose.model('user', users);
-var organiser = mongoose.model('organiser', organisers);
-var fevent = mongoose.model('fevent', events);
-var sponsor = mongoose.model('sponsor', sponsors);
-var participant = mongoose.model('participant', participants);
+var availbook = mongoose.model('availBook', availBooks);
+var soldBook = mongoose.model('soldBook', soldBooks);
+var reqBook = mongoose.model('reqBook', reqBooks);
 
 db.once('open', function() {
     console.log("Database connection Successful!");
