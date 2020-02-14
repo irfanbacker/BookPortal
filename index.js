@@ -12,7 +12,7 @@ app.use(express.static('public'));
 
 //--------------------------------------------------------------------------------------------------------------
 
-mongoose.connect('mongodb://localhost:27017/eventmgmt',{ useNewUrlParser: true , useUnifiedTopology: true});
+mongoose.connect('mongodb://localhost:27017/bookportal',{ useNewUrlParser: true , useUnifiedTopology: true});
 
 var db = mongoose.connection;
 

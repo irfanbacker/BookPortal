@@ -1,2 +1,2 @@
-# EventManagement
-Event Management system in NodeJS
+# BookPortal
+Used books portal in NodeJS
