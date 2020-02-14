@@ -21,7 +21,17 @@ db.on('error',function(){
    process.exit();
 });
 
-var users = mongoose.Schema({username: String, password: String});
+var users = mongoose.Schema({
+                              username: { type: String,
+                                          required: true,
+                                          minlength: 3,
+                                          maxlength: 50 },
+                              password: { type: String,
+                                          required: true,
+                                          minlength: 7,
+                                          maxlength: 255 }
+                            });
+
 var availBooks = mongoose.Schema({isbn: Number, seller: String, Name: String,author: String, price: Number});
 var soldBooks = mongoose.Schema({isbn: Number, seller: String, buyer: String, Name: String,author: String, price: Number});
 var reqBooks = mongoose.Schema({isbn: Number, seller: String, Name: String,author: String, price: Number});
@@ -37,10 +47,49 @@ db.once('open', function() {
 });
 //--------------------------------------------------------------------------------------------------------------
 
-app.get("/", function(request, response) {
-  response.sendFile(__dirname + "/views/index.html");
+const LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(
+     (username, password, done) => {
+
+
+        if(username === 'test@gmail.com' && password === '1234') {
+           return done(null, {username: 'test@gmail.com'});
+        } else {
+           return done(null, false);
+        }
+    }
+ ));
+
+function isLoggedIn(req ,res, next){
+  if(req.isAuthenticated()){
+    return next();
+  }else{
+    return res.redirect('/login');
+}
+
+//--------------------------------------------------------------------------------------------------------------
+
+app.get("/", function(req, res) {
+  res.sendFile(__dirname + "/views/index.html");
 });
 
+app.get('/login', (req, res) => {
+        res.sendFile(__dirname + "/views/login.html");
+});
+
+app.get('/dashboard', isLoggedIn, (req, res) => {
+        res.sendFile(__dirname + "/views/dashboard.html");
+});
+
+app.post('/login', passport.authenticate('local', {
+        failureRedirect: '/login',
+        successRedirect: '/dashboard'
+}));
+
+app.use(function (req, res, next) {
+  res.status(404).sendFile(__dirname + "/views/404.html");
+});
 //-------------------------------------------------------------------------------
 
 const listener = app.listen(port,function() {
