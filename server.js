@@ -50,16 +50,15 @@ function newUser(nuser){
 
 function formValidation(data){
   var errlist={status:1, error:['ERR1','ERR2']};
-  user.findOne({username: data.username}, function (err, euser) {
-    //console.log(euser+'   ----   '+data.username);
-    if (err) return console.error(err);
-    if(euser.length!=0){
+  var q=user.findOne({username: data.username}).exec();
+  q.then(function (euser) {
+    if(euser){
       console.log(data.username+' repeated');
       errlist.status=0;
       errlist.error.push('Username already exists!');
     }
+    return errlist;
   });
-  return errlist;
 };
 
 //-------------------------------------------------PASSPORT----------------------------------------------------------------------
@@ -169,10 +168,15 @@ const io = socket(listener);
 io.on("connection", function(socket) {
 
   socket.on('checkinput', function(data){
-    var errlist=formValidation(data);
-    socket.emit("inputresponse", errlist);
-    if(errlist.status)  newUser(data);
-    console.log(errlist);
+    var userexists=0;
+    var q=user.findOne({username: data.username},function (err,euser) {
+      if(euser){
+        console.log(data.username+' repeated');
+        userexists=1;
+      }
+      console.log('uname exists : '+userexists);
+      socket.emit("inputresponse", userexists);
+    });
   });
 
   socket.on('disconnect', function () {

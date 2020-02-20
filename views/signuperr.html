@@ -45,36 +45,36 @@
               <div class="col-md-6 mb-3 form-label-group">
                 <label for="firstName">First name</label>
                 <input type="text" class="form-control" name="firstName" id="firstName" placeholder="John" value="">
-                <div name='errfirstName' style="display:none" id="errfirstName" class="alert alert-danger" role="alert"></div>
+                <div name='errfirstName' style="display:none" id="err" class="alert alert-danger" role="alert"></div>
               </div>
               <div class="col-md-6 mb-3 form-label-group">
                 <label for="lastName">Last name</label>
                 <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Wick" value="">
-                <div name='errlastName' style="display:none" id="errlastName" class="alert alert-danger" role="alert"></div>
+                <div name='errlastName' style="display:none" id="err" class="alert alert-danger" role="alert"></div>
               </div>
             </div>
 
             <div class="mb-3 form-label-group">
               <label for="username">Username</label>
                 <input type="text" class="form-control" name="username" id="username" placeholder="Username">
-                <div name='errusername' style="display:none" id="errusername" class="alert alert-danger" role="alert"></div>
+                <div name='errusername' style="display:none" id="err" class="alert alert-danger" role="alert"></div>
             </div>
 
             <div class="mb-3 form-label-group">
               <label for="email">Email</label>
               <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com">
-              <div name='erremail' style="display:none" id="erremail" class="alert alert-danger" role="alert"></div>
+              <div name='erremail' style="display:none" id="err" class="alert alert-danger" role="alert"></div>
             </div>
 
             <div class="mb-3 form-label-group">
               <label for="address">Phone number</label>
               <input type="text" class="form-control" name="phone" id="phone" placeholder="1234567890">
-              <div name='erraddress' style="display:none" id="erraddress" class="alert alert-danger" role="alert"></div>
+              <div name='erraddress' style="display:none" id="err" class="alert alert-danger" role="alert"></div>
             </div>
             <div class="mb-3 form-label-group">
               <label for="password">Password</label>
               <input type="text" class="form-control" name="password" id="password" placeholder="">
-              <div name='errpassword' style="display:none" id="errpassword" class="alert alert-danger" role="alert"></div>
+              <div name='errpassword' style="display:none" id="err" class="alert alert-danger" role="alert"></div>
             </div>
             <hr class="mb-4">
             <button class="btn btn-primary btn-sm btn-block" type="submit" value="submit" id="signup">Sign up</button>
@@ -108,38 +108,31 @@
                 phone: $('#phone').val()
         };
         var promise = new Promise(function(resolve,reject){
-          errs.length=0;
           for (var i = 0; i < errs.length; i++) {
-            $('#err'+errs[i].loc).empty();
-            $('#err'+errs[i].loc).hide();
+            $('#err'+errs.loc).html('');
+            $('#err'+errs.loc).hide();
           }
           //console.log('promise inside');
-          socket.emit('checkinput', data);
-          setTimeout(function(){
-            resolve('success');
-          },2000);
+          socket.emit('checkuname', data.username);
+          resolve('success');
         });
         promise.then(function(value){
-
-          setTimeout(function(){
-            //console.log('promise then');
-            if(errs.length==0) {
-              console.log('redirect login');
-              //window.location.href = '/login';
+          //console.log('promise then');
+          if(errs.length==0) {
+            socket.emit('adduser', data);
+            window.location.href = '/login';
+          }
+          else{
+            for (var i = 0; i < errs.length; i++) {
+              $('#err'+errs.loc).show();
+              $('#err'+errs.loc).append('<li>'+errs.m[i]+'</li>');
             }
-            else{
-              for (var i = 0; i < errs.length; i++) {
-                console.log(errs);
-                $('#err'+errs[i].loc).show();
-                $('#err'+errs[i].loc).append('<li>'+errs[i].m+'</li>');
-              }
-            }
-          }, 100);
+          }
         });
       });
-      socket.on('inputresponse',function(userexists){
-        if(userexists){
-          console.log('uname exists : '+userexists);
+      socket.on('unameresponse',function(result){
+        if(result){
+          console.log('uname exists : '+result);
           var uerr={loc : 'username', m : 'Username already taken'};
           errs.push(uerr);
         }
