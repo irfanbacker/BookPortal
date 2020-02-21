@@ -114,13 +114,21 @@
         else return false;
       }
 
+      function isNum(number) {
+        var str = /^[0-9]+$/;
+        if(number.match(str)){
+          return true;
+        }
+        else return false;
+      }
+
       function hasSpace(s) {
         return /\s/g.test(s);
       }
 
       function emailvalid(mail)
       {
-        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(myForm.emailAddr.value)) return true;
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(mail)) return true;
         else  return false;
       }
 
@@ -149,14 +157,14 @@
           setTimeout(function(){
             //------------FIRSTNAME-----------------
             if(data.firstName.length==0){
-              var perr={loc : 'firstName', m : 'Firstname cannot be empty'};
-              errs.push(perr);
+              var fnerr={loc : 'firstName', m : 'Firstname cannot be empty'};
+              errs.push(fnerr);
             }
 
             //------------LASTNAME-----------------
             if(data.lastName.length==0){
-              var perr={loc : 'lastName', m : 'Lastname cannot be empty'};
-              errs.push(perr);
+              var lnerr={loc : 'lastName', m : 'Lastname cannot be empty'};
+              errs.push(lnerr);
             }
 
             //----------USERNAME-------------------
@@ -176,18 +184,22 @@
 
             //------------EMAIL-----------------
             if(data.email.length==0){
-              var perr={loc : 'email', m : 'Email cannot be empty'};
-              errs.push(perr);
+              var emerr={loc : 'email', m : 'Email cannot be empty'};
+              errs.push(emerr);
             }
             else if(!emailvalid(data.email)){
-              var perr={loc : 'email', m : 'Invalid Email'};
-              errs.push(perr);
+              var emerr={loc : 'email', m : 'Invalid Email'};
+              errs.push(emerr);
             }
 
             //------------PHONE-----------------
-            if(data.phone.length<10){
-              var perr={loc : 'phone', m : 'Phone no. cannot be less than 10 digits'};
-              errs.push(perr);
+            if(!isNum(data.phone)){
+              var pherr={loc : 'phone', m : 'Enter numbers only'};
+              errs.push(pherr);
+            }
+            else if(data.phone.length<10){
+              var pherr={loc : 'phone', m : 'Phone no. cannot be less than 10 digits'};
+              errs.push(pherr);
             }
 
             //------------PASSWORD-----------------
@@ -204,7 +216,7 @@
               errs.push(uerr);
             }
 
-          },50);
+          },35);
           setTimeout(resolve,100);
         });
         promise.then(function(){
@@ -216,8 +228,8 @@
               window.location.href = '/login';
             }
             else{
+              console.log(errs);
               for (var i = 0; i < errs.length; i++) {
-                console.log(errs);
                 $('#'+errs[i].loc).addClass('is-invalid');
                 $('#err'+errs[i].loc).show();
                 $('#err'+errs[i].loc).append('<li>'+errs[i].m+'</li>');
