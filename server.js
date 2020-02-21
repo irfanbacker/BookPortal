@@ -118,12 +118,16 @@ app.get('/login',function(req, res){
     res.sendFile(__dirname + "/views/login.html");
   });
 
+  app.get('/loginfail',function(req, res){
+      res.sendFile(__dirname + "/views/loginfail.html");
+    });
+
 app.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) { return next(err); }
     if (!user) {
       console.log('auth fail '+user);
-      return res.redirect('/login');
+      return res.redirect('/loginfail');
     }
     else req.logIn(user, function(err) {
       if (err) { return next(err); }
@@ -174,6 +178,7 @@ io.on("connection", function(socket) {
         console.log(data.username+' repeated');
         userexists=1;
       }
+      else newUser(data);
       console.log('uname exists : '+userexists);
       socket.emit("inputresponse", userexists);
     });
