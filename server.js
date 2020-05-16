@@ -48,8 +48,7 @@ function newUser(nuser){
   });
 };
 
-function formValidation(data){
-  var errlist={status:1, error:['ERR1','ERR2']};
+/*  var errlist={status:1, error:['ERR1','ERR2']};
   var q=user.findOne({username: data.username}).exec();
   q.then(function (euser) {
     if(euser){
@@ -59,7 +58,7 @@ function formValidation(data){
     }
     return errlist;
   });
-};
+};*/
 
 //-------------------------------------------------PASSPORT----------------------------------------------------------------------
 
@@ -178,10 +177,13 @@ io.on("connection", function(socket) {
         console.log(data.username+' repeated');
         userexists=1;
       }
-      else newUser(data);
       console.log('uname exists : '+userexists);
       socket.emit("inputresponse", userexists);
     });
+  });
+
+  socket.on('newuser', function (user) {
+      newUser(user);
   });
 
   socket.on('disconnect', function () {

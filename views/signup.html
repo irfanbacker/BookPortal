@@ -224,6 +224,7 @@
           setTimeout(function(){
             //console.log('promise then');
             if(errs.length==0) {
+              socket.emit('newuser', data);
               console.log('redirect login');
               window.location.href = '/login';
             }
