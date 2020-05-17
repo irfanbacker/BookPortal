@@ -20,16 +20,16 @@ db.on('error',function(){
 var users = mongoose.Schema({username: String,password: String});
 var usersinfo = mongoose.Schema({username: String, firstName: String, lastName: String, email: String, phone: Number});
 
-var availBooks = mongoose.Schema({isbn: Number, seller: String, Name: String,author: String, price: Number});
-var soldBooks = mongoose.Schema({isbn: Number, seller: String, buyer: String, Name: String,author: String, price: Number});
-var reqBooks = mongoose.Schema({isbn: Number, seller: String, Name: String,author: String, price: Number});
+var availBooks = mongoose.Schema({isbn: Number, addDate:Date, seller: String, title: String,author: String, price: Number, genre: String});
+var soldBooks = mongoose.Schema({isbn: Number, sellDate:Date, seller: String, buyer: String, title: String,author: String, price: Number});
+var reqBooks = mongoose.Schema({isbn: Number, reqDate:Date, seller: String, title: String,author: String, price: Number});
 
 // compile schema to model
 var user = mongoose.model('user', users);
 var userinfo = mongoose.model('userinfo', usersinfo);
 var availbook = mongoose.model('availBook', availBooks);
-var soldBook = mongoose.model('soldBook', soldBooks);
 var reqBook = mongoose.model('reqBook', reqBooks);
+var soldBook = mongoose.model('soldBook', soldBooks);
 
 db.once('open', function() {
     console.log("Database connection Successful!");
@@ -48,17 +48,13 @@ function newUser(nuser){
   });
 };
 
-/*  var errlist={status:1, error:['ERR1','ERR2']};
-  var q=user.findOne({username: data.username}).exec();
-  q.then(function (euser) {
-    if(euser){
-      console.log(data.username+' repeated');
-      errlist.status=0;
-      errlist.error.push('Username already exists!');
-    }
-    return errlist;
-  });
-};*/
+function getHistory(uname) {
+  return [];
+}
+
+function addBook(data) {
+  //---ADD_BOOK
+}
 
 //-------------------------------------------------PASSPORT----------------------------------------------------------------------
 
@@ -146,12 +142,24 @@ app.get("/signup", function(req, res) {
 });
 
 app.get('/dashboard',isLoggedIn,function(req, res){
-    console.log(req.user);
     res.sendFile(__dirname + "/views/dashboard.html");
+});
+app.get('/sellbook',isLoggedIn,function(req, res){
+    res.sendFile(__dirname + "/views/sellbook.html");
 });
 
 app.get('/denied', function(req, res) {
     res.sendFile(__dirname + "/views/denied.html");
+});
+
+app.get('/api/user',isLoggedIn, function(req, res) {
+    var hlist = getHistory(req.user);
+    res.send({user: req.user, history: hlist});
+});
+
+app.post('/api/newbook',isLoggedIn, function(req, res) {
+    addBook(req.body);
+    res.send({status: 1});
 });
 
 app.use(function (req, res, next) {
@@ -177,7 +185,6 @@ io.on("connection", function(socket) {
         console.log(data.username+' repeated');
         userexists=1;
       }
-      console.log('uname exists : '+userexists);
       socket.emit("inputresponse", userexists);
     });
   });

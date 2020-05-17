@@ -7,7 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
           $('#welcome').html('Welcome '+data.user.username)
           console.log(data.user);
       }
-  });
+      if (data.history.length!=0) {
 
-  $('#history').html('<p align="center">NO HISTORY RECORDED!</p>');
+      }
+      else {
+        $('#history').html('');
+        $('#htable').html('<p align="center">NO HISTORY RECORDED!</p>');
+      }
+  });
 });

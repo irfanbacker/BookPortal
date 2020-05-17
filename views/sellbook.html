@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>| Dashboard | - The Book Portal</title>
+    <title>| Add | - The Book Portal</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -26,14 +26,12 @@
       padding-top: 20px;
     }
     </style>
-
-    <script src="/db.js"></script>
   </head>
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">The Book Portal</a>
-      <span id="welcome" style="color: white;">Welcome to Book Portal</span>
+      <span id="welcome" style="color: white;">---</span>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
           <button class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/logout'">Sign out</button>
@@ -50,7 +48,7 @@
               <li class="nav-item">
                 <a class="nav-link active" href="/dashboard">
                   <span data-feather="home"></span>
-                  Dashboard <span class="sr-only">(current)</span>
+                  Dashboard
                 </a>
               </li>
               <li class="nav-item">
@@ -62,7 +60,7 @@
               <li class="nav-item">
                 <a class="nav-link" href="/sellbook">
                   <span data-feather="plus-circle"></span>
-                  Sell a book
+                  Sell a book <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
@@ -89,7 +87,7 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">Dashboard</h1>
+            <h1 class="h2">Add a book</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
                 <button class="btn btn-sm btn-outline-secondary">Share</button>
@@ -101,45 +99,49 @@
               </button>
             </div>
           </div>
-          <h5>Last 10 activities</h5></br>
-          <div class="table-responsive">
-            <table class="table table-striped table-sm">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>ISBN</th>
-                  <th>Title</th>
-                  <th>Activity Type</th>
-                  <th>Sold to/Bought from</th>
-                  <th>Price</th>
-                </tr>
-              </thead>
-              <tbody id="history">
-                <tr>
-                  <td>1,001</td>
-                  <td>Lorem</td>
-                  <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
-                </tr>
-                <tr>
-                  <td>1,014</td>
-                  <td>per</td>
-                  <td>inceptos</td>
-                  <td>himenaeos</td>
-                  <td>Curabitur</td>
-                </tr>
-                <tr>
-                  <td>1,015</td>
-                  <td>sodales</td>
-                  <td>ligula</td>
-                  <td>in</td>
-                  <td>libero</td>
-                </tr>
-              </tbody>
-            </table>
-            <div id="htable"></div>
+
+          <div id="addform">
+            <form autocomplete="off">
+              <div class="col-sm-3 mb-3 form-label-group">
+                <label for="title">Book Title</label>
+                <input type="text" class="form-control" name="title" id="title" placeholder="Thomas Calculus" value="">
+                <div name='errtitle' style="display:none" id="errtitle" class="alert alert-danger" role="alert">Book title cannot be empty!</div>
+              </div>
+              <div class="col-sm-3 mb-3 form-label-group">
+                  <label for="author">Author</label>
+                  <input type="text" class="form-control" name="author" id="author" placeholder="Thomas" value="">
+                  <div name='errauthor' style="display:none" id="errauthor" class="alert alert-danger" role="alert">Book author cannot be empty!</div>
+              </div>
+
+              <div class="col-sm-3 mb-3 form-label-group">
+                <label for="isbn">ISBN</label>
+                <input type="number" class="form-control" name="isbn" id="isbn" placeholder="1234567890123">
+                <div name='errisbn' style="display:none" id="errisbn" class="alert alert-danger" role="alert">ISBN should be of 10 or 13 digits!</div>
+              </div>
+
+              <div class="col-sm-3 mb-3 form-label-group">
+                <label for="genre">Genre</label>
+                <select class="form-control" id="genre">
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                </select>
+              </div>
+
+              <div class="col-sm-2 mb-3 form-label-group">
+                <label for="price">Price (in Rs.)</label>
+                <input type="number" class="form-control" name="price" id="price" placeholder="399">
+                <div name='errprice' style="display:none" id="errprice" class="alert alert-danger" role="alert">Book price cannot be empty!</div>
+              </div>
+
+              <hr class="mb-4">
+              <div class="col-sm-1">
+                <button class="btn btn-primary btn-sm btn-block" type="submit" value="submit" id="addsell">Submit</button>
+              </div>
+            </form>
           </div>
+          <div style="display:none" id="added"><p align='center'>Book added to market!</p></div>
         </main>
       </div>
     </div>
@@ -149,12 +151,65 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-
+style="display: none"
     <!-- Icons -->
     <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
     <script>
       feather.replace()
     </script>
+
+    <script>
+      var err=0;
+      function sendb(data) {
+        $.post("/api/newbook", data, function(resp, status){
+          if(resp.status==1){
+            $('#addform').hide();
+            $('#added').show();
+          }
+        });
+        console.log('sent')
+      }
+      $("#addsell").click(function(e) {
+        e.preventDefault();
+        var data = {
+                title: $('#title').val(),
+                author: $("#author").val(),
+                genre: $('#genre').val(),
+                price: $('#price').val(),
+                addDate: Date(),
+                isbn: $('#isbn').val()
+        };
+
+        if(data.title.length==0) {
+          $('#errtitle').show();
+          err++;
+        }
+        else $('#errtitle').hide();
+
+        if(data.author.length==0) {
+          $('#errauthor').show();
+          err++;
+        }
+        else $('#errauthor').hide();
+
+        if(data.price.toString().length==0) {
+          $('#errprice').show();
+          err++;
+        }
+        else $('#errprice').hide();
+
+        if((data.isbn.toString().length==11)||(data.isbn.toString().length==14)||(data.isbn.toString().length==0)) {
+          $('#errisbn').show();
+          err++;
+        }
+        else $('#errisbn').hide();
+
+        console.log(data);
+        if(err==0) sendb(data);
+        else err=0;
+      });
+    </script>
+
     <footer class="my-5 pt-5 text-muted text-center text-small">
       <hr>
       <p class="mb-1">&copy; 2019-2020 The Book portal</p>
