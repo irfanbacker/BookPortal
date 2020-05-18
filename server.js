@@ -52,6 +52,16 @@ function getHistory(uname) {
   return [];
 }
 
+function searchBook(title,cb) {
+  var searchKey = new RegExp(title, 'i');
+  availBook.find({title: searchKey}, function (err, books) {
+    if (err) return console.error(err);
+    else {
+      cb(books);
+    }
+  });
+}
+
 function addBook(cuser,data) {
   var book1 = new availBook({isbn: data.isbn, addDate: Date(), owner: cuser.username, title: data.title, author: data.author, price: data.price, genre: data.genre});
   book1.save(function (err, book) {
@@ -195,6 +205,10 @@ app.get('/buybook',isLoggedIn,function(req, res){
     res.sendFile(__dirname + "/views/buybook.html");
 });
 
+app.get('/search',isLoggedIn,function(req, res){
+    res.sendFile(__dirname + "/views/search.html");
+});
+
 app.get('/denied', function(req, res) {
     res.sendFile(__dirname + "/views/denied.html");
 });
@@ -220,6 +234,12 @@ app.post('/api/getbook',isLoggedIn, function(req, res) {
 app.post('/api/buybook',isLoggedIn, function(req, res) {
     buyBook(req.user,req.body);
     res.send({status: 1});
+});
+
+app.post('/api/search',isLoggedIn, function(req, res) {
+    searchBook(req.body.title,function (data){
+      res.send({user: req.user, results: data});
+    });
 });
 
 app.use(function (req, res, next) {
