@@ -99,7 +99,7 @@
               </button>
             </div>
           </div>
-          <div name='errbook' style="display:none" id="errbook" class="alert alert-danger" role="alert">ISBN number not found in database</div>
+          <div name='errbook' style="display:none" id="errbook" class="alert alert-danger" role="alert">ISBN number not found in database ie., book is NOT currently available!</div>
           <div id="buyform">
             <form autocomplete="off">
               <div class="col-sm-3 mb-3 form-label-group">
@@ -115,15 +115,16 @@
           <hr class="mb-4">
           <div  id="binfo" style="display:none" class="col-sm-5 card card-body">
             <div class="row">
-              &emsp; ISBN: <p id="aisbn">123</p> &emsp;&emsp; Title: <p id="atitle">123</p>
+              <div class="row">&emsp; Owner: <p id="aowner"></p></div><br>
+              &emsp; ISBN: <p id="aisbn"></p> &emsp;&emsp; Title: <p id="atitle"></p>
             </div>
             <div class="row">
-              &emsp; Author: <p id="aauthor">123</p> &emsp;&emsp; Genre: <p id="agenre">123</p>
+              &emsp; Author: <p id="aauthor"></p> &emsp;&emsp; Genre: <p id="agenre"></p>
             </div>
-            <div class="row" style="color:red">&emsp; Price: <p id="aprice">123</p>&nbsp;₹</div>
+            <div class="row" style="color:red">&emsp; Price: <p id="aprice"></p>&nbsp;₹</div>
             <button type="button" class="btn btn-primary btn-sm col-sm-2" id="buyconfirm" onClick="buyb(bisbn);">Buy</button>
           </div>
-          <div style="display:none" id="bought"><p align='center'>Book bought!</p></div>
+          <div style="display:none" id="bought" class="alert alert-success" role="alert">Book bought!</div>
         </main>
       </div>
     </div>
@@ -147,6 +148,7 @@ style="display: none"
         $.post("/api/getbook", data, function(resp, status){
           if(resp.status==1){
             $('#errbook').hide();
+            $('#aowner').html(resp.owner);
             $('#aisbn').html(resp.isbn);
             $('#atitle').html(resp.title);
             $('#aauthor').html(resp.author);
@@ -171,16 +173,16 @@ style="display: none"
 
       $("#buybutton").click(function(e) {
         e.preventDefault();
-        isbn = $('#isbn').val();
+        bisbn = $('#isbn').val();
         var data = {
                 isbn: $('#isbn').val()
         };
-
-        if((data.isbn.toString().length==11)||(data.isbn.toString().length==14)||(data.isbn.toString().length==0)) {
+        console.log(data.isbn.toString().length);
+        if(((data.isbn.toString().length==10)||(data.isbn.toString().length==13))) $('#errisbn').hide();
+        else {
           $('#errisbn').show();
           err++;
         }
-        else $('#errisbn').hide();
 
         console.log(data);
         if(err==0) sendb(data);

@@ -20,14 +20,14 @@ db.on('error',function(){
 var users = mongoose.Schema({username: String,password: String});
 var usersinfo = mongoose.Schema({username: String, firstName: String, lastName: String, email: String, phone: Number});
 
-var availBooks = mongoose.Schema({isbn: Number, addDate:Date, seller: String, title: String,author: String, price: Number, genre: String});
-var soldBooks = mongoose.Schema({isbn: Number, sellDate:Date, seller: String, buyer: String, title: String,author: String, price: Number});
-var reqBooks = mongoose.Schema({isbn: Number, reqDate:Date, seller: String, title: String,author: String, price: Number});
+var availBooks = mongoose.Schema({isbn: Number, addDate:Date, owner: String, title: String,author: String, price: Number, genre: String});
+var soldBooks = mongoose.Schema({isbn: Number, sellDate:Date, owner: String, buyer: String, title: String,author: String, price: Number, genre: String});
+var reqBooks = mongoose.Schema({isbn: Number, reqDate:Date, uname: String, title: String,author: String, price: Number});
 
 // compile schema to model
 var user = mongoose.model('user', users);
 var userinfo = mongoose.model('userinfo', usersinfo);
-var availbook = mongoose.model('availBook', availBooks);
+var availBook = mongoose.model('availBook', availBooks);
 var reqBook = mongoose.model('reqBook', reqBooks);
 var soldBook = mongoose.model('soldBook', soldBooks);
 
@@ -52,17 +52,49 @@ function getHistory(uname) {
   return [];
 }
 
-function addBook(data) {
-  //---ADD_BOOK
+function addBook(cuser,data) {
+  var book1 = new availBook({isbn: data.isbn, addDate: Date(), owner: cuser.username, title: data.title, author: data.author, price: data.price, genre: data.genre});
+  book1.save(function (err, book) {
+    if (err) return console.error(err);
+    console.log(data.title + " is added by "+cuser.username);
+  });
 }
 
-function getBook(data) {
-  //---GET_BOOK
-  return {status:1, title: 'THomas Calculus', author: 'Thomas', genre: 'Math', isbn: 1234567890, price: 123};
+function getBook(data,cb) {
+  availBook.findOne({isbn: data.isbn}, function (err, book) {
+    if (err) return console.error(err);
+    else {
+      if(book == null) cb({status: 0});
+      else {
+        cb({status: 1, title: book.title, author: book.author, genre: book.genre, isbn: book.isbn, owner: book.owner, price: book.price});
+      }
+    }
+  });
 }
 
-function buyBook(data) {
-  //---BUY_BOOK
+function buyBook(cuser,data) {
+  var book1=new soldBook();
+  availBook.findOne({isbn: data.isbn}, function (err, book) {
+    if (err) return console.error(err);
+    else {
+      book1.isbn = book.isbn;
+      book1.title = book.title;
+      book1.author = book.author;
+      book1.genre = book.genre;
+      book1.price = book.price;
+      book1.owner = book.owner;
+      book1.buyer = cuser.username;
+    }
+  }).then(function (){
+    //console.log(book1);
+    availBook.deleteOne({isbn: data.isbn}, function (err) {
+      if (err) return console.error(err);
+    });
+    book1.save(function (err, book) {
+      if (err) return console.error(err);
+      console.log(book1.title + " is bought by "+book1.buyer);
+    });
+  });
 }
 
 //-------------------------------------------------PASSPORT----------------------------------------------------------------------
@@ -174,16 +206,18 @@ app.get('/api/user',isLoggedIn, function(req, res) {
 });
 
 app.post('/api/newbook',isLoggedIn, function(req, res) {
-    addBook(req.body);
+    addBook(req.user,req.body);
     res.send({status: 1});
 });
 
 app.post('/api/getbook',isLoggedIn, function(req, res) {
-    res.send(getBook(req.body));
+    getBook(req.body,function(data) {
+      res.send(data);
+    });
 });
 
 app.post('/api/buybook',isLoggedIn, function(req, res) {
-    buyBook(req.body);
+    buyBook(req.user,req.body);
     res.send({status: 1});
 });
 

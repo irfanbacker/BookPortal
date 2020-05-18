@@ -141,7 +141,7 @@
               </div>
             </form>
           </div>
-          <div style="display:none" id="added"><p align='center'>Book added to market!</p></div>
+          <div style="display:none" id="added" class="alert alert-success" role="alert">Book added to market!</div>
         </main>
       </div>
     </div>
@@ -198,11 +198,11 @@ style="display: none"
         }
         else $('#errprice').hide();
 
-        if((data.isbn.toString().length==11)||(data.isbn.toString().length==14)||(data.isbn.toString().length==0)) {
+        if(((data.isbn.toString().length==10)||(data.isbn.toString().length==13))) $('#errisbn').hide();
+        else {
           $('#errisbn').show();
           err++;
         }
-        else $('#errisbn').hide();
 
         console.log(data);
         if(err==0) sendb(data);
