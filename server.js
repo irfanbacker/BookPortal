@@ -56,6 +56,15 @@ function addBook(data) {
   //---ADD_BOOK
 }
 
+function getBook(data) {
+  //---GET_BOOK
+  return {status:1, title: 'THomas Calculus', author: 'Thomas', genre: 'Math', isbn: 1234567890, price: 123};
+}
+
+function buyBook(data) {
+  //---BUY_BOOK
+}
+
 //-------------------------------------------------PASSPORT----------------------------------------------------------------------
 
 passport.use(new Strategy(
@@ -144,13 +153,20 @@ app.get("/signup", function(req, res) {
 app.get('/dashboard',isLoggedIn,function(req, res){
     res.sendFile(__dirname + "/views/dashboard.html");
 });
-app.get('/sellbook',isLoggedIn,function(req, res){
-    res.sendFile(__dirname + "/views/sellbook.html");
+
+app.get('/addbook',isLoggedIn,function(req, res){
+    res.sendFile(__dirname + "/views/addbook.html");
+});
+
+app.get('/buybook',isLoggedIn,function(req, res){
+    res.sendFile(__dirname + "/views/buybook.html");
 });
 
 app.get('/denied', function(req, res) {
     res.sendFile(__dirname + "/views/denied.html");
 });
+
+//----------------------------------------------------------
 
 app.get('/api/user',isLoggedIn, function(req, res) {
     var hlist = getHistory(req.user);
@@ -159,6 +175,15 @@ app.get('/api/user',isLoggedIn, function(req, res) {
 
 app.post('/api/newbook',isLoggedIn, function(req, res) {
     addBook(req.body);
+    res.send({status: 1});
+});
+
+app.post('/api/getbook',isLoggedIn, function(req, res) {
+    res.send(getBook(req.body));
+});
+
+app.post('/api/buybook',isLoggedIn, function(req, res) {
+    buyBook(req.body);
     res.send({status: 1});
 });
 

@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>| Add | - The Book Portal</title>
+    <title>| Buy | - The Book Portal</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -58,13 +58,13 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/sellbook">
+                <a class="nav-link" href="/addbook">
                   <span data-feather="plus-circle"></span>
-                  Sell a book <span class="sr-only">(current)</span>
+                  Add a book <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="/buybook">
                   <span data-feather="shopping-cart"></span>
                   Buy a book
                 </a>
@@ -87,7 +87,7 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">Add a book</h1>
+            <h1 class="h2">Buy a book</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group mr-2">
                 <button class="btn btn-sm btn-outline-secondary">Share</button>
@@ -99,49 +99,31 @@
               </button>
             </div>
           </div>
-
-          <div id="addform">
+          <div name='errbook' style="display:none" id="errbook" class="alert alert-danger" role="alert">ISBN number not found in database</div>
+          <div id="buyform">
             <form autocomplete="off">
-              <div class="col-sm-3 mb-3 form-label-group">
-                <label for="title">Book Title</label>
-                <input type="text" class="form-control" name="title" id="title" placeholder="Thomas Calculus" value="">
-                <div name='errtitle' style="display:none" id="errtitle" class="alert alert-danger" role="alert">Book title cannot be empty!</div>
-              </div>
-              <div class="col-sm-3 mb-3 form-label-group">
-                  <label for="author">Author</label>
-                  <input type="text" class="form-control" name="author" id="author" placeholder="Thomas" value="">
-                  <div name='errauthor' style="display:none" id="errauthor" class="alert alert-danger" role="alert">Book author cannot be empty!</div>
-              </div>
-
               <div class="col-sm-3 mb-3 form-label-group">
                 <label for="isbn">ISBN</label>
                 <input type="number" class="form-control" name="isbn" id="isbn" placeholder="1234567890123">
                 <div name='errisbn' style="display:none" id="errisbn" class="alert alert-danger" role="alert">ISBN should be of 10 or 13 digits!</div>
               </div>
-
-              <div class="col-sm-3 mb-3 form-label-group">
-                <label for="genre">Genre</label>
-                <select class="form-control" id="genre">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                </select>
-              </div>
-
-              <div class="col-sm-2 mb-3 form-label-group">
-                <label for="price">Price (in Rs.)</label>
-                <input type="number" class="form-control" name="price" id="price" placeholder="399">
-                <div name='errprice' style="display:none" id="errprice" class="alert alert-danger" role="alert">Book price cannot be empty!</div>
-              </div>
-
-              <hr class="mb-4">
               <div class="col-sm-1">
-                <button class="btn btn-primary btn-sm btn-block" type="submit" value="submit" id="addsell">Submit</button>
+                <button class="btn btn-secondary btn-sm btn-block" type="submit" value="submit" id="buybutton">Submit</button>
               </div>
             </form>
           </div>
-          <div style="display:none" id="added"><p align='center'>Book added to market!</p></div>
+          <hr class="mb-4">
+          <div  id="binfo" style="display:none" class="col-sm-5 card card-body">
+            <div class="row">
+              &emsp; ISBN: <p id="aisbn">123</p> &emsp;&emsp; Title: <p id="atitle">123</p>
+            </div>
+            <div class="row">
+              &emsp; Author: <p id="aauthor">123</p> &emsp;&emsp; Genre: <p id="agenre">123</p>
+            </div>
+            <div class="row" style="color:red">&emsp; Price: <p id="aprice">123</p>&nbsp;₹</div>
+            <button type="button" class="btn btn-primary btn-sm col-sm-2" id="buyconfirm" onClick="buyb(bisbn);">Buy</button>
+          </div>
+          <div style="display:none" id="bought"><p align='center'>Book bought!</p></div>
         </main>
       </div>
     </div>
@@ -160,43 +142,39 @@ style="display: none"
 
     <script>
       var err=0;
+      var bisbn;
       function sendb(data) {
-        $.post("/api/newbook", data, function(resp, status){
+        $.post("/api/getbook", data, function(resp, status){
           if(resp.status==1){
-            $('#addform').hide();
-            $('#added').show();
+            $('#errbook').hide();
+            $('#aisbn').html(resp.isbn);
+            $('#atitle').html(resp.title);
+            $('#aauthor').html(resp.author);
+            $('#agenre').html(resp.genre);
+            $('#aprice').html(resp.price);
+            $('#binfo').show();
+          }
+          else $('#errbook').show();
+        });
+        console.log('sent');
+      }
+
+      function buyb(isbn) {
+        $.post("/api/buybook", {isbn: isbn}, function(resp, status){
+          if(resp.status==1){
+            $('#binfo').hide();
+            $('#bought').show();
           }
         });
-        console.log('sent')
+        console.log('bought');
       }
-      $("#addsell").click(function(e) {
+
+      $("#buybutton").click(function(e) {
         e.preventDefault();
+        isbn = $('#isbn').val();
         var data = {
-                title: $('#title').val(),
-                author: $("#author").val(),
-                genre: $('#genre').val(),
-                price: $('#price').val(),
-                addDate: Date(),
                 isbn: $('#isbn').val()
         };
-
-        if(data.title.length==0) {
-          $('#errtitle').show();
-          err++;
-        }
-        else $('#errtitle').hide();
-
-        if(data.author.length==0) {
-          $('#errauthor').show();
-          err++;
-        }
-        else $('#errauthor').hide();
-
-        if(data.price.toString().length==0) {
-          $('#errprice').show();
-          err++;
-        }
-        else $('#errprice').hide();
 
         if((data.isbn.toString().length==11)||(data.isbn.toString().length==14)||(data.isbn.toString().length==0)) {
           $('#errisbn').show();
