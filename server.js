@@ -84,6 +84,7 @@ function buyBook(cuser,data) {
       book1.price = book.price;
       book1.owner = book.owner;
       book1.buyer = cuser.username;
+      book1.sellDate = Date();
     }
   }).then(function (){
     //console.log(book1);
