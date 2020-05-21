@@ -91,6 +91,18 @@
             <div class="btn-toolbar mb-2 mb-md-0">
             </div>
           </div>
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-secondary active" id="op1">
+              <input type="radio" name="options" id="option1" autocomplete="off" checked> Title
+            </label>
+            <label class="btn btn-secondary" id="op2">
+              <input type="radio" name="options" id="option2" autocomplete="off"> Author
+            </label>
+            <label class="btn btn-secondary" id="op3">
+              <input type="radio" name="options" id="option3" autocomplete="off"> Owner
+            </label>
+          </div>
+        </br></br>
           <div id="searchform">
             <form autocomplete="off">
               <div class="input-group col-sm-3 mb-2">
@@ -135,6 +147,27 @@ style="display: none"
 
     <script>
       var err=0;
+      var par="title";
+
+      $('#option1').click(function(e){
+        $('#op1').addClass('active');
+        $('#op2').removeClass('active');
+        $('#op3').removeClass('active');
+        par = "title";
+      });
+      $('#option2').click(function(e){
+        $('#op1').removeClass('active');
+        $('#op2').addClass('active');
+        $('#op3').removeClass('active');
+        par = "author";
+      });
+      $('#option3').click(function(e){
+        $('#op1').removeClass('active');
+        $('#op2').removeClass('active');
+        $('#op3').addClass('active');
+        par = "owner";
+      });
+
       function sendb(data) {
         $.post("/api/search", data, function(resp, status){
           if(resp.results.length==0) {
@@ -163,9 +196,10 @@ style="display: none"
       $("#searchbutton").click(function(e) {
         e.preventDefault();
         var data = {
-                title: $('#title').val()
+                val: $('#title').val(),
+                par: par
         };
-        if(data.title.length==0) {
+        if(data.val.length==0) {
           $('#errtitle').show();
           err++;
         }

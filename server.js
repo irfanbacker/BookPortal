@@ -52,9 +52,11 @@ function getHistory(uname) {
   return [];
 }
 
-function searchBook(title,cb) {
-  var searchKey = new RegExp(title, 'i');
-  availBook.find({title: searchKey}, function (err, books) {
+function searchBook(val,par,cb) {
+  var searchKey = new RegExp(val, 'i');
+  var sdata={};
+  sdata[par] = searchKey;
+  availBook.find(sdata, function (err, books) {
     if (err) return console.error(err);
     else {
       cb(books);
@@ -237,7 +239,7 @@ app.post('/api/buybook',isLoggedIn, function(req, res) {
 });
 
 app.post('/api/search',isLoggedIn, function(req, res) {
-    searchBook(req.body.title,function (data){
+    searchBook(req.body.val, req.body.par,function (data){
       res.send({user: req.user, results: data});
     });
 });
