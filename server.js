@@ -21,7 +21,7 @@ var users = mongoose.Schema({username: String,password: String});
 var usersinfo = mongoose.Schema({username: String, firstName: String, lastName: String, email: String, phone: Number});
 
 var availBooks = mongoose.Schema({isbn: Number, addDate:Date, owner: String, title: String,author: String, price: Number, genre: String});
-var soldBooks = mongoose.Schema({isbn: Number, sellDate:Date, owner: String, buyer: String, title: String,author: String, price: Number, genre: String});
+var soldBooks = mongoose.Schema({isbn: Number, addDate:Date, sellDate:Date, owner: String, buyer: String, title: String,author: String, price: Number, genre: String});
 var reqBooks = mongoose.Schema({isbn: Number, reqDate:Date, uname: String, title: String,author: String, price: Number});
 
 // compile schema to model
@@ -48,8 +48,23 @@ function newUser(nuser){
   });
 };
 
-function getHistory(uname) {
-  return [];
+function getHistory(uname, cb) {
+  availBook.find({owner: uname.username}, function (err, books1) {
+    if (err) return console.error(err);
+    else {
+      soldBook.find({$or:[ {'owner':uname.username}, {'buyer':uname.username}]}, function (err, books2) {
+        if (err) return console.error(err);
+        else {
+          reqBook.find({owner: uname.username}, function (err, books3) {
+            if (err) return console.error(err);
+            else {
+              cb(books1,books2,books3);
+            }
+          });
+        }
+      });
+    }
+  });
 }
 
 function searchBook(val,par,cb) {
@@ -97,6 +112,7 @@ function buyBook(cuser,data) {
       book1.owner = book.owner;
       book1.buyer = cuser.username;
       book1.sellDate = Date();
+      book1.addDate = book.addDate;
     }
   }).then(function (){
     //console.log(book1);
@@ -218,8 +234,10 @@ app.get('/denied', function(req, res) {
 //----------------------------------------------------------
 
 app.get('/api/user',isLoggedIn, function(req, res) {
-    var hlist = getHistory(req.user);
-    res.send({user: req.user, history: hlist});
+    getHistory(req.user, function (avlist,slist,reqlist) {
+      if((avlist.length+slist.length+reqlist.length)==0) res.send({user: req.user, empty:1})
+      else res.send({user: req.user, avlist: avlist, slist: slist, reqlist:reqlist, empty:0});
+    });
 });
 
 app.post('/api/newbook',isLoggedIn, function(req, res) {
