@@ -263,6 +263,11 @@ app.get('/denied', function(req, res) {
     res.sendFile(__dirname + "/views/denied.html");
 });
 
+app.get('/myprofile',isLoggedIn,function(req, res){
+    res.sendFile(__dirname + "/views/profile.html");
+});
+
+
 //----------------------------------------------------------------------------------------------
 
 app.get('/api/user',isLoggedIn, function(req, res) {
