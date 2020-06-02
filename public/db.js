@@ -1,5 +1,6 @@
 var uname;
 var hlist = [];
+var slist = [];
 
 document.addEventListener("DOMContentLoaded", function () {
   $.getJSON("api/user", function(data) {
@@ -32,6 +33,25 @@ document.addEventListener("DOMContentLoaded", function () {
         $('#history').html('');
         $('#htable').html('<p align="center">NO HISTORY RECORDED!</p>');
       }
+  });
+
+  $.getJSON("api/reqavail", function(data) {
+
+    var reql = "";
+    if(data.empty==0){
+      $('#reqalert').show();
+      console.log(data.reqavail);
+      for(book=0; book<data.reqavail.length; book++){
+        if(!slist.includes(data.reqavail[book].isbn))
+        {
+          reql+="<li>"+data.reqavail[book].isbn+" - "+data.reqavail[book].title+"  ::  "+bookCount(data.reqavail,data.reqavail[book].isbn)+" Book(s)</li>"
+          slist.push(data.reqavail[book].isbn);
+        }
+      }
+      reql+="</br><button class='btn btn-sm btn-outline-danger' onclick='remRequests()'><span data-feather='trash-2'></span>Remove available requests</button>";
+      $('#reqlist').html(reql);
+    }
+    else $('#reqalert').hide();
   });
 });
 
@@ -107,11 +127,28 @@ function compiles(book,cb){
 
 function compilereq(book,cb){
   var b = {};
-  b.date = book.reqDate;
+  b.date = new Date(book.reqDate);
   b.isbn = book.isbn;
   b.title = book.title;
   b.type = "Request";
   b.nuser = "-";
   b.price = "-";
   cb(b);
+}
+
+function bookCount(rlist,isbn){
+  var c = 0;
+  for(book in rlist){
+    if(rlist[book].isbn==isbn) c++;
+  }
+  return c;
+}
+
+function remRequests(){
+  $.post("/api/remreqs", {slist:slist}, function(resp, status){
+    if(resp.status==1){
+      $('#reqlist').html('');
+      $('#reqalert').hide();
+    }
+  });
 }

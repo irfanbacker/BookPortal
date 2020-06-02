@@ -20,9 +20,9 @@ db.on('error',function(){
 var users = mongoose.Schema({username: String,password: String});
 var usersinfo = mongoose.Schema({username: String, firstName: String, lastName: String, email: String, phone: Number});
 
-var availBooks = mongoose.Schema({isbn: Number, addDate:Date, owner: String, title: String,author: String, price: Number, genre: String});
+var availBooks = mongoose.Schema({isbn: Number, addDate:Date, owner: String, title: String, author: String, price: Number, genre: String});
 var soldBooks = mongoose.Schema({isbn: Number, addDate:Date, sellDate:Date, owner: String, buyer: String, title: String,author: String, price: Number, genre: String});
-var reqBooks = mongoose.Schema({isbn: Number, reqDate:Date, uname: String, title: String,author: String, price: Number});
+var reqBooks = mongoose.Schema({isbn: Number, reqDate:Date, uname: String, title: String, author: String});
 
 // compile schema to model
 var user = mongoose.model('user', users);
@@ -55,7 +55,7 @@ function getHistory(uname, cb) {
       soldBook.find({$or:[ {'owner':uname.username}, {'buyer':uname.username}]}, function (err, books2) {
         if (err) return console.error(err);
         else {
-          reqBook.find({owner: uname.username}, function (err, books3) {
+          reqBook.find({uname: uname.username}, function (err, books3) {
             if (err) return console.error(err);
             else {
               cb(books1,books2,books3);
@@ -83,7 +83,26 @@ function addBook(cuser,data) {
   var book1 = new availBook({isbn: data.isbn, addDate: Date(), owner: cuser.username, title: data.title, author: data.author, price: data.price, genre: data.genre});
   book1.save(function (err, book) {
     if (err) return console.error(err);
-    console.log(data.title + " is added by "+cuser.username);
+    else console.log(data.title + " is added by "+cuser.username);
+  });
+}
+
+function reqBookfn(cuser,data,cb) {
+  var book1 = new reqBook({isbn: data.isbn, reqDate: Date(), uname: cuser.username, title: data.title, author: data.author});
+  reqBook.findOne({isbn: data.isbn, uname: cuser.username}, function (err, book) {
+    if (err) return console.error(err);
+    else {
+      if(book == null){
+        book1.save(function (err, book) {
+          if (err) return console.error(err);
+          else {
+            console.log(data.title + " is requested by "+cuser.username);
+            cb(0);
+          }
+        });
+      }
+      else cb(1);
+    }
   });
 }
 
@@ -123,7 +142,7 @@ function buyBook(cuser,data) {
       if (err) return console.error(err);
       console.log(book1.title + " is bought by "+book1.buyer);
     });
-  });
+  });avail
 }
 
 //-------------------------------------------------PASSPORT----------------------------------------------------------------------
@@ -158,6 +177,15 @@ function isLoggedIn(req ,res, next){
     return res.redirect('/login');
   }
 };
+
+//------------------------------------------------------------------------------------------------------------------------------
+
+function getFields(input, field) {
+    var output = [];
+    for (var i=0; i < input.length ; ++i)
+        output.push(input[i][field]);
+    return output;
+}
 
 //-------------------------------------------------EXPRESS----------------------------------------------------------------------
 
@@ -219,6 +247,10 @@ app.get('/addbook',isLoggedIn,function(req, res){
     res.sendFile(__dirname + "/views/addbook.html");
 });
 
+app.get('/reqbook',isLoggedIn,function(req, res){
+    res.sendFile(__dirname + "/views/reqbook.html");
+});
+
 app.get('/buybook',isLoggedIn,function(req, res){
     res.sendFile(__dirname + "/views/buybook.html");
 });
@@ -231,18 +263,61 @@ app.get('/denied', function(req, res) {
     res.sendFile(__dirname + "/views/denied.html");
 });
 
-//----------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 app.get('/api/user',isLoggedIn, function(req, res) {
     getHistory(req.user, function (avlist,slist,reqlist) {
-      if((avlist.length+slist.length+reqlist.length)==0) res.send({user: req.user, empty:1})
+      if((avlist.length+slist.length+reqlist.length)==0) res.send({user: req.user, empty:1});
       else res.send({user: req.user, avlist: avlist, slist: slist, reqlist:reqlist, empty:0});
+    });
+});
+
+app.get('/api/reqavail',isLoggedIn, function(req, res) {
+    reqBook.find({uname: req.user.username}, function (err, reqbooks) {
+      if (err) return console.error(err);
+      else {
+        if(reqbooks.length==0) res.send({empty:1});
+        else{
+          availBook.find({'isbn': { $in: getFields(reqbooks,'isbn') }}, function (err, books) {
+            if (err) return console.error(err);
+            else {
+              if(books.length==0) res.send({empty:1});
+              else res.send({empty:0, reqavail:books});
+            }
+          });
+        }
+      }
     });
 });
 
 app.post('/api/newbook',isLoggedIn, function(req, res) {
     addBook(req.user,req.body);
     res.send({status: 1});
+});
+
+app.post('/api/reqbook',isLoggedIn, function(req, res) {
+    availBook.findOne({isbn: req.body.isbn}, function (err, book) {
+      if (err) return console.error(err);
+      else {
+        if(book != null) res.send({status: 0});
+        else {
+          reqBookfn(req.user,req.body,function (reqexists){
+            res.send({status: 1, exists: reqexists});
+          });
+        }
+      }
+    });
+});
+
+app.post('/api/remreqs',isLoggedIn, function(req, res) {
+    console.log(req.body.slist);
+    reqBook.deleteMany({'isbn': { $in: req.body.slist }}, function (err) {
+      if(err) console.log(err);
+      else {
+        console.log("Successful deletion");
+        res.send({status: 1});
+      }
+    });
 });
 
 app.post('/api/getbook',isLoggedIn, function(req, res) {

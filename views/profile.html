@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>| Buy | - The Book Portal</title>
+    <title>| Dashboard | - The Book Portal</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -26,12 +26,13 @@
       padding-top: 20px;
     }
     </style>
+
   </head>
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">The Book Portal</a>
-      <span id="welcome" style="color: white;">---</span>
+      <span id="welcome" style="color: white;">-</span>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
           <button class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/logout'">Sign out</button>
@@ -66,7 +67,7 @@
               <li class="nav-item">
                 <a class="nav-link" href="/buybook">
                   <span data-feather="shopping-cart"></span>
-                  Buy a book <span class="sr-only">(current)</span>
+                  Buy a book
                 </a>
               </li>
               <li class="nav-item">
@@ -78,7 +79,7 @@
               <li class="nav-item">
                 <a class="nav-link" href="#">
                   <span data-feather="bar-chart-2"></span>
-                  My Profile
+                  My Profile <span class="sr-only">(current)</span>
                 </a>
               </li>
             </ul>
@@ -87,36 +88,15 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">Buy a book</h1>
+            <h1 class="h2">My Profile</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
             </div>
           </div>
-          <div name='errbook' style="display:none" id="errbook" class="alert alert-danger" role="alert">ISBN number not found in database ie., book is NOT currently available!</div>
-          <div id="buyform">
-            <form autocomplete="off">
-              <div class="col-sm-3 mb-3 form-label-group">
-                <label for="isbn">ISBN</label>
-                <input type="number" class="form-control" name="isbn" id="isbn" placeholder="1234567890123">
-                <div name='errisbn' style="display:none" id="errisbn" class="alert alert-danger" role="alert">ISBN should be of 10 or 13 digits!</div>
-              </div>
-              <div class="col-sm-1">
-                <button class="btn btn-secondary btn-sm btn-block" type="submit" value="submit" id="buybutton">Submit</button>
-              </div>
-            </form>
-          </div>
-          <hr class="mb-4">
-          <div  id="binfo" style="display:none" class="col-sm-5 card card-body">
-            <div class="row">
-              <div class="row">&emsp; <b>Owner</b>: <p id="aowner"></p></div><br>
-              &emsp; <b>ISBN</b>: <p id="aisbn"></p> &emsp;&emsp; <b>Title</b>: <p id="atitle"></p>
+          <div>
+            <div class="card card-body">
+              profile data
             </div>
-            <div class="row">
-              &emsp; <b>Author</b>: <p id="aauthor"></p> &emsp;&emsp; <b>Genre</b>: <p id="agenre"></p>
-            </div>
-            <div class="row" style="color:red">&emsp; <b>Price</b>: <p id="aprice"></p>&nbsp;₹</div>
-            <button type="button" class="btn btn-primary btn-sm col-sm-2" id="buyconfirm" onClick="buyb(bisbn);">Buy</button>
           </div>
-          <div style="display:none" id="bought" class="alert alert-success" role="alert">Book bought!</div>
         </main>
       </div>
     </div>
@@ -126,62 +106,12 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-style="display: none"
+
     <!-- Icons -->
     <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
     <script>
       feather.replace()
     </script>
-
-    <script>
-      var err=0;
-      var bisbn;
-      function sendb(data) {
-        $.post("/api/getbook", data, function(resp, status){
-          if(resp.status==1){
-            $('#errbook').hide();
-            $('#aowner').html(resp.owner);
-            $('#aisbn').html(resp.isbn);
-            $('#atitle').html(resp.title);
-            $('#aauthor').html(resp.author);
-            $('#agenre').html(resp.genre);
-            $('#aprice').html(resp.price);
-            $('#binfo').show();
-          }
-          else $('#errbook').show();
-        });
-        console.log('sent');
-      }
-
-      function buyb(isbn) {
-        $.post("/api/buybook", {isbn: isbn}, function(resp, status){
-          if(resp.status==1){
-            $('#binfo').hide();
-            $('#bought').show();
-          }
-        });
-        console.log('bought');
-      }
-
-      $("#buybutton").click(function(e) {
-        e.preventDefault();
-        bisbn = $('#isbn').val();
-        var data = {
-                isbn: $('#isbn').val()
-        };
-        console.log(data.isbn.toString().length);
-        if(((data.isbn.toString().length==10)||(data.isbn.toString().length==13))) $('#errisbn').hide();
-        else {
-          $('#errisbn').show();
-          err++;
-        }
-
-        console.log(data);
-        if(err==0) sendb(data);
-        else err=0;
-      });
-    </script>
-
     <footer class="my-5 pt-5 text-muted text-center text-small">
       <hr>
       <p class="mb-1">&copy; 2019-2020 The Book portal</p>
