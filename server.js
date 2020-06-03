@@ -67,6 +67,14 @@ function getHistory(uname, cb) {
   });
 }
 
+function getProfile(uname,cb){
+  userinfo.findOne({username: uname.username}, function (err, user) {
+    getHistory(uname,function (avlist,slist,reqlist){
+      cb(user,{avbooks: avlist.length, sbooks: slist.length, reqbooks: reqlist.length});
+    });
+  });
+}
+
 function searchBook(val,par,cb) {
   var searchKey = new RegExp(val, 'i');
   var sdata={};
@@ -259,21 +267,29 @@ app.get('/search',isLoggedIn,function(req, res){
     res.sendFile(__dirname + "/views/search.html");
 });
 
-app.get('/denied', function(req, res) {
-    res.sendFile(__dirname + "/views/denied.html");
-});
-
 app.get('/myprofile',isLoggedIn,function(req, res){
     res.sendFile(__dirname + "/views/profile.html");
 });
 
+app.get('/profile/:id',isLoggedIn,function(req, res){
+    res.sendFile(__dirname + "/views/userprofile.html");
+});
 
+app.get('/denied', function(req, res) {
+    res.sendFile(__dirname + "/views/denied.html");
+});
 //----------------------------------------------------------------------------------------------
 
 app.get('/api/user',isLoggedIn, function(req, res) {
     getHistory(req.user, function (avlist,slist,reqlist) {
       if((avlist.length+slist.length+reqlist.length)==0) res.send({user: req.user, empty:1});
       else res.send({user: req.user, avlist: avlist, slist: slist, reqlist:reqlist, empty:0});
+    });
+});
+
+app.get('/api/user/profile',isLoggedIn, function(req, res) {
+    getProfile(req.user, function (udata,bdata) {
+      res.send({user: udata, info: bdata});
     });
 });
 
@@ -292,6 +308,13 @@ app.get('/api/reqavail',isLoggedIn, function(req, res) {
           });
         }
       }
+    });
+});
+
+app.post('/api/profile',isLoggedIn, function(req, res) {
+    getProfile({username: req.body.uname}, function (udata,bdata) {
+      if(req.user.username == req.body.uname) res.send({user: udata, info: bdata, same: true});
+      else res.send({user: udata, info: bdata, same: false});
     });
 });
 
@@ -327,7 +350,8 @@ app.post('/api/remreqs',isLoggedIn, function(req, res) {
 
 app.post('/api/getbook',isLoggedIn, function(req, res) {
     getBook(req.body,function(data) {
-      res.send(data);
+      if(data.owner == req.user.username) res.send({data:data, same: true});
+      else res.send({data:data, same: false});
     });
 });
 

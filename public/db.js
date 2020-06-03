@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (data.hasOwnProperty('user')) {
           $('#welcome').html('Welcome '+data.user.username);
           uname = data.user.username;
-          console.log(data.user);
       }
       if (data.empty==0) {
         compiledata(data.avlist,data.slist,data.reqlist, function(finalList){
@@ -40,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
     var reql = "";
     if(data.empty==0){
       $('#reqalert').show();
-      console.log(data.reqavail);
       for(book=0; book<data.reqavail.length; book++){
         if(!slist.includes(data.reqavail[book].isbn))
         {
@@ -108,7 +106,7 @@ function compiles(book,cb){
     b3.isbn = book.isbn;
     b3.title = book.title;
     b3.type = "Sell";
-    b3.nuser = book.buyer;
+    b3.nuser = '<a href="/profile/'+book.buyer+'" rel="noopener noreferrer" target="_blank">'+book.buyer+'</a>';
     b3.price = book.price;
     l.push(b3);
   }
@@ -118,7 +116,7 @@ function compiles(book,cb){
     b2.isbn = book.isbn;
     b2.title = book.title;
     b2.type = "Buy";
-    b2.nuser = book.owner;
+    b2.nuser = '<a href="/profile/'+book.owner+'" rel="noopener noreferrer" target="_blank">'+book.owner+'</a>';
     b2.price = book.price;
     l.push(b2);
   }
