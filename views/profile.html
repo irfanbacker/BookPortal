@@ -32,7 +32,7 @@
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">The Book Portal</a>
-      <span id="welcome" style="color: white;">-</span>
+      <span id="welcome" style="color: white;"></span>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
           <button class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/logout'">Sign out</button>
@@ -89,7 +89,7 @@
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">My Profile</h1>
-            <div class="btn-toolbar mb-2 mb-md-0"><a href="#" type="button" class="btn btn-secondary">Edit Profile</a>
+            <div class="btn-toolbar mb-2 mb-md-0"><a href="/editprofile" type="button" class="btn btn-secondary">Edit Profile</a>
             </div>
           </div>
           <div class="card bg-secondary text-light">
@@ -104,6 +104,79 @@
               <div class="col-3 card-body" style="text-align: center;">
                 <img src="dp.png" alt="Profile" class="img-thumbnail mx-auto d-block" style="width:auto;height:150px;">
               </div>
+            </div>
+          </div>
+          </br>
+          <div id="availtable" class="table-responsive" style="display:none">
+            <h2 class="h3">My books on market</h2>
+            <hr>
+            <table class="table table-striped table-sm">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Date</th>
+                  <th>ISBN</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Price(₹)</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="availcontent">
+              </tbody>
+            </table>
+            <div>
+              <nav aria-label="Page navigation">
+                <ul id="availpage" class="pagination pagination-sm justify-content-center" style="display:none">
+                </ul>
+              </nav>
+            </div>
+          </div>
+          <div id="soldtable" class="table-responsive" style="display:none">
+            <h2 class="h3">Books sold</h2>
+            <hr>
+            <table class="table table-striped table-sm">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Date</th>
+                  <th>ISBN</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Buyer</th>
+                  <th>Price(₹)</th>
+                </tr>
+              </thead>
+              <tbody id="soldcontent">
+              </tbody>
+            </table>
+            <div>
+              <nav aria-label="Page navigation">
+                <ul id="soldpage" class="pagination pagination-sm justify-content-center" style="display:none">
+                </ul>
+              </nav>
+            </div>
+          </div>
+          <div id="boughttable" class="table-responsive" style="display:none">
+            <h2 class="h3">Books bought</h2>
+            <hr>
+            <table class="table table-striped table-sm">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Date</th>
+                  <th>ISBN</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Owner</th>
+                  <th>Price(₹)</th>
+                </tr>
+              </thead>
+              <tbody id="boughtcontent">
+              </tbody>
+            </table>
+            <div>
+              <nav aria-label="Page navigation">
+                <ul id="boughtpage" class="pagination pagination-sm justify-content-center" style="display:none">
+                </ul>
+              </nav>
             </div>
           </div>
         </main>

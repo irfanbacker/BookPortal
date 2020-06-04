@@ -99,13 +99,14 @@
               </div>
               <div>
                 <strong>The following books requested are now available:</strong></br>
-                <div id="reqlist"></div>
+                <div id="reqlist" class="table"></div>
+                <button id="reqremb" class='btn btn-sm btn-outline-danger' onclick='remRequests()'><span data-feather='trash-2'></span>Remove available requests</button>
               </div>
           </div>
           <h5>Last 10 activities</h5></br>
           <div class="table-responsive">
             <table class="table table-striped table-sm">
-              <thead>
+              <thead class="thead-dark">
                 <tr>
                   <th>Date</th>
                   <th>ISBN</th>

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>  Edit Profile  - The Book Portal</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+
+    <style>
+      #snav {
+      height: 100%;
+      position: fixed;
+      z-index: 1;
+      top: 10;
+      left: 0;
+      overflow-x: hidden;
+      padding-top: 20px;
+    }
+    </style>
+
+  </head>
+
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/dashboard">The Book Portal</a>
+      <span id="welcome" style="color: white;"></span>
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <button class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/logout'">Sign out</button>
+
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar" id="snav">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="/dashboard">
+                  <span data-feather="home"></span>
+                  Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/search">
+                  <span data-feather="search"></span>
+                  Search
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/addbook">
+                  <span data-feather="plus-circle"></span>
+                  Add a book
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/buybook">
+                  <span data-feather="shopping-cart"></span>
+                  Buy a book
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/reqbook">
+                  <span data-feather="info"></span>
+                  Request book
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/myprofile">
+                  <span data-feather="user"></span>
+                  My Profile
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">Edit Profile</h1>
+          </div>
+          <div id="infocard" class="card bg-secondary text-light">
+            <div class="row card-block">
+              <div class="col-9 card-body card-text">
+                <form autocomplete="off">
+                <div class="row">
+                  <div class="col-md-4 mb-3 form-label-group">
+                    <label for="firstName">First name</label></br>
+                    <input type="text" class="form-control form-control-sm" name="firstName" id="firstName" placeholder="John" value="">
+                    <div name='errfirstName' style="display:none" id="errfirstName" class="alert alert-danger" role="alert"></div>
+                  </div>
+                  <div class="col-md-4 mb-3 form-label-group">
+                    <label for="lastName">Last name</label></br>
+                    <input type="text" class="form-control form-control-sm" name="lastName" id="lastName" placeholder="Wick" value="">
+                    <div name='errlastName' style="display:none" id="errlastName" class="alert alert-danger" role="alert"></div>
+                  </div>
+                  <div class="col-md-4 mb-3 form-label-group"></div>
+                </div>
+                <div class="row col-md-4 mb-3 form-label-group">
+                  <label for="username">Username</label></br>
+                  <input type="text" class="form-control form-control-sm" name="username" id="username" placeholder="Username" readonly disabled>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 mb-3 form-label-group">
+                    <label for="email">Email</label></br>
+                    <input type="email" class="form-control form-control-sm" name="email" id="email" placeholder="you@example.com">
+                    <div name='erremail' style="display:none" id="erremail" class="alert alert-danger" role="alert"></div>
+                  </div>
+                  <div class="col-md-4 mb-3 form-label-group">
+                    <label for="number">Phone number</label></br>
+                    <input type="number" class="form-control form-control-sm" name="phone" id="phone" placeholder="1234567890">
+                    <div name='errphone' style="display:none" id="errphone" class="alert alert-danger" role="alert"></div>
+                  </div>
+                </div>
+                <div class="row col-sm-3" id="chbutton"></br><a type="button" onclick="pchange=1;$('#chbutton').hide();$('#passch').show();" class="btn btn-outline-info btn-sm text-light">Change password</a></br></div>
+                <div class="row col-md-4 mb-3 form-label-group" id="passch" style="display:none;">
+                  <label for="password">New password</label>
+                  <input type="password" class="form-control form-control-sm" name="password" id="password" placeholder="">
+                  <div name='errpassword' style="display:none" id="errpassword" class="alert alert-danger" role="alert"></div>
+                </div>
+                <div class="row col-md-4 mb-3 form-label-group" id="passchange">
+                  <label for="password">Confirm current password</label>
+                  <input type="password" class="form-control form-control-sm" name="password" id="oldpass" placeholder="">
+                  <div name='errpassword' style="display:none" id="erroldpass" class="alert alert-danger" role="alert"></div>
+                </div>
+                <div class="row col-sm-1"><a id="save" type="button" class="btn btn-success btn-sm text-light">Save</a></div>
+              </form>
+              </div>
+              <div class="col-3 card-body" style="text-align: center;">
+                <img src="../dp.png" alt="Profile" class="img-thumbnail mx-auto d-block" style="width:auto;height:150px;">
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+
+    <script>
+      var userinfo;
+      var errs=[];
+      var pchange = 0;
+      var newpass;
+      var oldpass;
+
+      function uvalid(username) {
+        var str = /^[0-9a-zA-Z]+$/;
+        if(username.match(str)){
+          return true;
+        }
+        else return false;
+      }
+
+      function isNum(number) {
+        var str = /^[0-9]+$/;
+        if(number.match(str)){
+          return true;
+        }
+        else return false;
+      }
+
+      function hasSpace(s) {
+        return /\s/g.test(s);
+      }
+
+      function emailvalid(mail)
+      {
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/.test(mail)) return true;
+        else  return false;
+      }
+
+      $("#save").click(function(e) {
+        newpass = $('#password').val();
+        oldpass = $('#oldpass').val();
+        e.preventDefault();
+        var data = {
+                username: $('#username').val(),
+                firstName: $('#firstName').val(),
+                lastName: $('#lastName').val(),
+                email: $('#email').val(),
+                phone: $('#phone').val()
+        };
+        var promise = new Promise(function(resolve,reject){
+          var terr=errs;
+          for (var i = 0; i < terr.length; i++) {
+            //console.log('#err'+terr[i].loc);
+            $('#'+terr[i].loc).removeClass('is-invalid');
+            $('#err'+terr[i].loc).html('');
+            $('#err'+terr[i].loc).hide();
+          }
+          //console.log('promise inside');
+          setTimeout(function(){
+            errs.length=0;
+          },25);
+          setTimeout(function(){
+            //------------FIRSTNAME-----------------
+            if(data.firstName.length==0){
+              var fnerr={loc : 'firstName', m : 'Firstname cannot be empty'};
+              errs.push(fnerr);
+            }
+
+            //------------LASTNAME-----------------
+            if(data.lastName.length==0){
+              var lnerr={loc : 'lastName', m : 'Lastname cannot be empty'};
+              errs.push(lnerr);
+            }
+
+            //------------EMAIL-----------------
+            if(data.email.length==0){
+              var emerr={loc : 'email', m : 'Email cannot be empty'};
+              errs.push(emerr);
+            }
+            else if(!emailvalid(data.email)){
+              var emerr={loc : 'email', m : 'Invalid Email'};
+              errs.push(emerr);
+            }
+
+            //------------PHONE-----------------
+            if(!isNum(data.phone)){
+              var pherr={loc : 'phone', m : 'Enter numbers only'};
+              errs.push(pherr);
+            }
+            else if(data.phone.length<10){
+              var pherr={loc : 'phone', m : 'Phone no. cannot be less than 10 digits'};
+              errs.push(pherr);
+            }
+
+            //------------PASSWORD-----------------
+            if(newpass.length==0){
+              if(pchange==1){
+                var perr={loc : 'password', m : 'Password should not be empty!'};
+                errs.push(perr);
+              }
+            }
+            else if(newpass.length<5){
+              var perr={loc : 'password', m : 'Password should have min. 5 characters'};
+              errs.push(perr);
+            }
+            else if(hasSpace(newpass)){
+              var uerr={loc : 'password', m : 'Password should not contain spaces'};
+              errs.push(uerr);
+            }
+
+            userinfo = data;
+
+            $.post("/api/confirmpass", {pass: oldpass}, function(resp, status){
+              if(resp.status==0){
+                var perr={loc : 'oldpass', m : 'Current password does not match!'};
+                errs.push(perr);
+              }
+            });
+
+          },35);
+          setTimeout(resolve,100);
+        });
+        promise.then(function(){
+
+          setTimeout(function(){
+            //console.log('promise then');
+            if(errs.length==0) {
+              $.post("/api/updateprofile", {data: userinfo}, function(resp, status){
+                if(resp.status==1){
+                  if(pchange==1){
+                    $.post("/api/updatepass", {data: {username: userinfo.username, password:newpass}}, function(resp, status){
+                        if(resp.status==1) window.location.replace('/myprofile');
+                    });
+                  }
+                  else window.location.replace('/myprofile');
+                }
+              });
+            }
+            else{
+              console.log(errs);
+              for (var i = 0; i < errs.length; i++) {
+                $('#'+errs[i].loc).addClass('is-invalid');
+                $('#err'+errs[i].loc).show();
+                $('#err'+errs[i].loc).append('<li>'+errs[i].m+'</li>');
+              }
+            }
+          }, 100);
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        $.getJSON("/api/user/profile", function(data) {
+            // Make sure the data contains the username as expected before using it
+            if (data.hasOwnProperty('user')) {
+                $('#firstName').val(data.user.firstName);
+                $('#lastName').val(data.user.lastName);
+                $('#username').val(data.user.username);
+                $('#email').val(data.user.email);
+                $('#phone').val(data.user.phone);
+            }
+        });
+      });
+
+    </script>
+
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+      <hr>
+      <p class="mb-1">&copy; 2019-2020 The Book portal</p>
+    </footer>
+  </body>
+</html>

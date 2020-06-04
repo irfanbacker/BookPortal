@@ -42,11 +42,11 @@ document.addEventListener("DOMContentLoaded", function () {
       for(book=0; book<data.reqavail.length; book++){
         if(!slist.includes(data.reqavail[book].isbn))
         {
-          reql+="<li>"+data.reqavail[book].isbn+" - "+data.reqavail[book].title+"  ::  "+bookCount(data.reqavail,data.reqavail[book].isbn)+" Book(s)</li>"
+          reql+="<tr><td>"+data.reqavail[book].isbn+"</td><td>"+data.reqavail[book].title+"</td><td>"+bookCount(data.reqavail,data.reqavail[book].isbn)+" Book(s)</td></tr>"
           slist.push(data.reqavail[book].isbn);
         }
       }
-      reql+="</br><button class='btn btn-sm btn-outline-danger' onclick='remRequests()'><span data-feather='trash-2'></span>Remove available requests</button>";
+      $('#reqremb').show();
       $('#reqlist').html(reql);
     }
     else $('#reqalert').hide();

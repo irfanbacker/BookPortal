@@ -101,12 +101,10 @@
       </footer>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 
     <script>
-      var socket = io("http://localhost:3000/");
       var errs=[];
 
       function uvalid(username) {
@@ -183,7 +181,15 @@
               var uerr={loc : 'username', m : 'Username can only contain letters and numbers'};
               errs.push(uerr);
             }
-            else socket.emit('checkinput', data);
+            else{
+              $.post('/api/unamecheck', {username: data.username}, function(resp, status){
+                  if(resp.status==1){
+                    console.log('uname exists');
+                    var uerr={loc : 'username', m : 'Username already taken'};
+                    errs.push(uerr);
+                  }
+              });
+            }
 
             //------------EMAIL-----------------
             if(data.email.length==0){
@@ -227,9 +233,11 @@
           setTimeout(function(){
             //console.log('promise then');
             if(errs.length==0) {
-              socket.emit('newuser', data);
-              console.log('redirect login');
-              window.location.href = '/login';
+              $.post("/api/newuser", data, function(resp, status){
+                  if(resp.status==1){
+                    window.location.href = '/login';
+                  }
+              });
             }
             else{
               console.log(errs);
@@ -242,14 +250,6 @@
           }, 100);
         });
       });
-      socket.on('inputresponse',function(userexists){
-        if(userexists){
-          console.log('uname exists : '+userexists);
-          var uerr={loc : 'username', m : 'Username already taken'};
-          errs.push(uerr);
-        }
-      });
-
 
     </script>
 

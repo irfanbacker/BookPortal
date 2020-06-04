@@ -1,5 +1,4 @@
 const express = require('express');
-const socket=require("socket.io");
 const passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 
@@ -271,6 +270,10 @@ app.get('/myprofile',isLoggedIn,function(req, res){
     res.sendFile(__dirname + "/views/profile.html");
 });
 
+app.get('/editprofile',isLoggedIn,function(req, res){
+    res.sendFile(__dirname + "/views/editprofile.html");
+});
+
 app.get('/profile/:id',isLoggedIn,function(req, res){
     res.sendFile(__dirname + "/views/userprofile.html");
 });
@@ -311,6 +314,49 @@ app.get('/api/reqavail',isLoggedIn, function(req, res) {
     });
 });
 
+app.get('/api/getreqs',isLoggedIn, function(req, res) {
+    reqBook.find({uname: req.user.username}, function (err, reqbooks) {
+      if (err) return console.error(err);
+      else res.send({reqlist: reqbooks});
+    });
+});
+
+app.get('/api/getavail',isLoggedIn, function(req, res) {
+    availBook.find({owner: req.user.username}, function (err, availbooks) {
+      if (err) return console.error(err);
+      else res.send({avlist: availbooks});
+    });
+});
+
+app.get('/api/getsold',isLoggedIn, function(req, res) {
+    soldBook.find({owner: req.user.username}, function (err, soldbooks) {
+      if (err) return console.error(err);
+      else res.send({slist: soldbooks});
+    });
+});
+
+app.get('/api/getbought',isLoggedIn, function(req, res) {
+    soldBook.find({buyer: req.user.username}, function (err, boughtbooks) {
+      if (err) return console.error(err);
+      else res.send({blist: boughtbooks});
+    });
+});
+
+app.post('/api/unamecheck', function(req, res) {
+  user.findOne({username: req.body.username},function (err,euser) {
+    if(euser){
+      console.log(req.body.username+' repeated');
+      res.send({status: 1});
+    }
+    else res.send({status: 0});
+  });
+});
+
+app.post('/api/newuser', function(req, res) {
+    newUser(req.body);
+    res.send({status:1});
+});
+
 app.post('/api/profile',isLoggedIn, function(req, res) {
     getProfile({username: req.body.uname}, function (udata,bdata) {
       if(req.user.username == req.body.uname) res.send({user: udata, info: bdata, same: true});
@@ -338,11 +384,20 @@ app.post('/api/reqbook',isLoggedIn, function(req, res) {
 });
 
 app.post('/api/remreqs',isLoggedIn, function(req, res) {
-    console.log(req.body.slist);
     reqBook.deleteMany({'isbn': { $in: req.body.slist }}, function (err) {
       if(err) console.log(err);
       else {
-        console.log("Successful deletion");
+        console.log("Successful deletion - req");
+        res.send({status: 1});
+      }
+    });
+});
+
+app.post('/api/remavail',isLoggedIn, function(req, res) {
+    availBook.deleteMany({'isbn': { $in: req.body.dlist }}, function (err) {
+      if(err) console.log(err);
+      else {
+        console.log("Successful deletion - avail");
         res.send({status: 1});
       }
     });
@@ -366,6 +421,25 @@ app.post('/api/search',isLoggedIn, function(req, res) {
     });
 });
 
+app.post('/api/confirmpass',isLoggedIn, function(req, res) {
+    user.findOne({username: req.user.username}, function (err, user1) {
+        if(user1.password==req.body.pass) res.send({status: 1});
+        else res.send({status: 0});
+    });
+});
+
+app.post('/api/updateprofile',isLoggedIn, function(req, res) {
+    userinfo.update({username: req.body.data.username}, req.body.data, function(err, affected, resp) {
+      res.send({status:1});
+    });
+});
+
+app.post('/api/updatepass',isLoggedIn, function(req, res) {
+    user.update({username: req.body.data.username}, req.body.data, function(err, affected, resp) {
+      res.send({status:1});
+    });
+});
+
 app.use(function (req, res, next) {
   res.status(404).sendFile(__dirname + "/views/404.html");
 });
@@ -374,31 +448,4 @@ app.use(function (req, res, next) {
 
 const listener=app.listen(3000,function() {
   console.log("Your app is listening on port " + 3000);
-});
-
-const io = socket(listener);
-
-//----------------------------SOCKET-----------------------------------------------------------------------------------------
-
-io.on("connection", function(socket) {
-
-  socket.on('checkinput', function(data){
-    var userexists=0;
-    var q=user.findOne({username: data.username},function (err,euser) {
-      if(euser){
-        console.log(data.username+' repeated');
-        userexists=1;
-      }
-      socket.emit("inputresponse", userexists);
-    });
-  });
-
-  socket.on('newuser', function (user) {
-      newUser(user);
-  });
-
-  socket.on('disconnect', function () {
-      socket.emit('disconnected');
-  });
-
 });
