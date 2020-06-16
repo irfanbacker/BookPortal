@@ -29,7 +29,7 @@
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">The Book Portal</a>
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/dashboard">The Book Portal</a>
       <span id="welcome" style="color: white;"></span>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
@@ -118,6 +118,7 @@
               <thead>
                 <tr>
                   <th>ISBN</th>
+                  <th></th>
                   <th>Title</th>
                   <th>Author</th>
                   <th>Owner</th>
@@ -178,6 +179,7 @@ style="display: none"
             tbhtml(resp.results,function (hdata){
               $('#rrows').html(hdata);
             });
+            console.log(resp.results);
             $('#results').show();
           }
         });
@@ -187,7 +189,7 @@ style="display: none"
       function tbhtml(results,cb){
         var tablehtml="";
         for(book in results){
-          tablehtml+="<tr>"+"<td>"+results[book].isbn+"</td>"+"<td>"+results[book].title+"</td>"+"<td>"+results[book].author+"</td>"+"<td>"+'<a href="/profile/'+results[book].owner+'" rel="noopener noreferrer" target="_blank">'+results[book].owner+'</a>';+"</td>"+"<td>"+results[book].price+"</td>"+"</tr>"
+          tablehtml+="<tr>"+"<td class='align-middle'>"+results[book].isbn+"</td>"+"<td class='align-middle'><img class='img-thumbnail' style='height: 100px;width: 77.36px' src='"+results[book].bookpic+"'></img></td>"+"<td class='align-middle'>"+results[book].title+"</td>"+"<td class='align-middle'>"+results[book].author+"</td>"+"<td class='align-middle'>"+'<a href="/profile/'+results[book].owner+'" rel="noopener noreferrer" target="_blank">'+results[book].owner+'</a>'+"</td>"+"<td class='align-middle'>"+results[book].price+"</td>"+"</tr>";
         }
         cb(tablehtml);
       }

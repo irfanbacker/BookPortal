@@ -104,17 +104,24 @@
             </form>
           </div>
           <hr class="mb-4">
-          <div  id="binfo" style="display:none" class="col-sm-5 card card-body">
-            <div>
-            <div class="row">&emsp; <b>Owner</b>: <p id="aowner"></p></div>
+
+          <div  id="binfo" style="display:none" class="col-sm-7 card card-body card-block">
             <div class="row">
-              &emsp; <b>ISBN</b>: <p id="aisbn"></p> &emsp;&emsp; <b>Title</b>: <p id="atitle"></p>
+            <div class="col-sm-6">
+              <div class="row">&emsp; <b>Owner</b>: <p id="aowner"></p></div>
+              <div class="row">
+                &emsp; <b>ISBN</b>: <p id="aisbn"></p> &emsp;&emsp; <b>Title</b>: <p id="atitle"></p>
+              </div>
+              <div class="row">
+                &emsp; <b>Author</b>: <p id="aauthor"></p> &emsp;&emsp; <b>Genre</b>: <p id="agenre"></p>
+              </div>
+              <div class="row" style="color:red">&emsp; <b>Price</b>: <p id="aprice"></p>&nbsp;₹</div>
+              <button type="button" class="btn btn-primary btn-sm col-sm-2" id="buyconfirm" onClick="buyb(bisbn);">Buy</button>
             </div>
-            <div class="row">
-              &emsp; <b>Author</b>: <p id="aauthor"></p> &emsp;&emsp; <b>Genre</b>: <p id="agenre"></p>
+            <div class="col">
+              <img id="cimg" class="img-thumbnail" style="width: 116px; height: 150px"></img></br></br>
             </div>
-            <div class="row" style="color:red">&emsp; <b>Price</b>: <p id="aprice"></p>&nbsp;₹</div>
-            <button type="button" class="btn btn-primary btn-sm col-sm-2" id="buyconfirm" onClick="buyb(bisbn);">Buy</button>
+            </div>
           </div>
           <div style="display:none" id="bought" class="alert alert-success" role="alert">Book bought!</div>
         </main>
@@ -153,6 +160,7 @@ style="display: none"
             $('#aauthor').html(resp.data.author);
             $('#agenre').html(resp.data.genre);
             $('#aprice').html(resp.data.price);
+            $('#cimg').attr('src', resp.data.bookpic);
             $('#binfo').show();
           }
           else {

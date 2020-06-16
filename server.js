@@ -17,10 +17,10 @@ db.on('error',function(){
 });
 
 var users = mongoose.Schema({username: String,password: String});
-var usersinfo = mongoose.Schema({username: String, firstName: String, lastName: String, email: String, phone: Number});
+var usersinfo = mongoose.Schema({username: String, firstName: String, lastName: String, email: String, phone: Number, profilepic: String});
 
-var availBooks = mongoose.Schema({isbn: Number, addDate:Date, owner: String, title: String, author: String, price: Number, genre: String});
-var soldBooks = mongoose.Schema({isbn: Number, addDate:Date, sellDate:Date, owner: String, buyer: String, title: String,author: String, price: Number, genre: String});
+var availBooks = mongoose.Schema({isbn: Number, addDate:Date, owner: String, title: String, author: String, price: Number, genre: String, bookpic: String});
+var soldBooks = mongoose.Schema({isbn: Number, addDate:Date, sellDate:Date, owner: String, buyer: String, title: String,author: String, price: Number, genre: String, bookpic: String});
 var reqBooks = mongoose.Schema({isbn: Number, reqDate:Date, uname: String, title: String, author: String});
 
 // compile schema to model
@@ -36,7 +36,7 @@ db.once('open', function() {
 
 function newUser(nuser){
   var user1 = new user({ username: nuser.username, password: nuser.password});
-  var info1 = new userinfo({ username: nuser.username, firstName: nuser.firstName, lastName: nuser.lastName, email: nuser.email,phone: nuser.phone});
+  var info1 = new userinfo({ username: nuser.username, firstName: nuser.firstName, lastName: nuser.lastName, email: nuser.email,phone: nuser.phone, profilepic: nuser.profilepic});
   // save model to database
   user1.save(function (err, user) {
     if (err) return console.error(err);
@@ -87,7 +87,7 @@ function searchBook(val,par,cb) {
 }
 
 function addBook(cuser,data) {
-  var book1 = new availBook({isbn: data.isbn, addDate: Date(), owner: cuser.username, title: data.title, author: data.author, price: data.price, genre: data.genre});
+  var book1 = new availBook({isbn: data.isbn, addDate: Date(), owner: cuser.username, title: data.title, author: data.author, price: data.price, genre: data.genre, bookpic: data.bookpic});
   book1.save(function (err, book) {
     if (err) return console.error(err);
     else console.log(data.title + " is added by "+cuser.username);
@@ -119,7 +119,7 @@ function getBook(data,cb) {
     else {
       if(book == null) cb({status: 0});
       else {
-        cb({status: 1, title: book.title, author: book.author, genre: book.genre, isbn: book.isbn, owner: book.owner, price: book.price});
+        cb({status: 1, title: book.title, author: book.author, genre: book.genre, isbn: book.isbn, owner: book.owner, price: book.price, bookpic: book.bookpic});
       }
     }
   });
@@ -139,6 +139,7 @@ function buyBook(cuser,data) {
       book1.buyer = cuser.username;
       book1.sellDate = Date();
       book1.addDate = book.addDate;
+      book1.bookpic = book.bookpic;
     }
   }).then(function (){
     //console.log(book1);
@@ -200,7 +201,8 @@ const app = express();
 //const { check, validationResult } = require('express-validator');
 
 //app.use(express.json());
-app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('body-parser').urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({limit: '50mb'}));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 app.use(express.static('public'));
 

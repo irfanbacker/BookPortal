@@ -30,7 +30,7 @@
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">The Book Portal</a>
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/dashboard">The Book Portal</a>
       <span id="welcome" style="color: white;"></span>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
@@ -100,7 +100,7 @@
                 <p id="cbooks"></p>
               </div>
               <div class="col-3 card-body" style="text-align: center;">
-                <img src="../dp.png" alt="Profile" class="img-thumbnail mx-auto d-block" style="width:auto;height:150px;">
+                <img id="profilepic" alt="Profile" class="img-thumbnail mx-auto d-block" style="width:auto;height:150px;">
               </div>
             </div>
           </div>
@@ -124,8 +124,8 @@
       var userinfo;
 
       document.addEventListener("DOMContentLoaded", function () {
-        console.log(document.getElementsByTagName('a')[0].pathname.replace('/profile/',''));
-        $.post("/api/profile", {uname: document.getElementsByTagName('a')[0].pathname.replace('/profile/','')}, function(data,status) {
+        console.log(window.location.pathname.replace('/profile/',''));
+        $.post("/api/profile", {uname: window.location.pathname.replace('/profile/','')}, function(data,status) {
             // Make sure the data contains the username as expected before using it
             if(data.user == null){
               $('#infocard').hide();
@@ -137,6 +137,7 @@
               $('#cuname').html('<strong>&ensp;&nbsp;Username: </strong>'+data.user.username);
               $('#ccontact').html('<strong>&ensp;&nbsp;Email ID: </strong>'+data.user.email+'<strong>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Phone No.: </strong>'+data.user.phone);
               $('#cbooks').html('<strong>&ensp;&nbsp;Added books in market: </strong>'+data.info.avbooks+'<strong>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Sold books: </strong>'+data.info.sbooks+'<strong>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Books requested: </strong>'+data.info.reqbooks);
+              $('#profilepic').attr('src', data.user.profilepic);
               userinfo = data.user;
             }
         });

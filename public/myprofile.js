@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
           $('#cuname').html('<strong>&ensp;&nbsp;Username: </strong>'+data.user.username);
           $('#ccontact').html('<strong>&ensp;&nbsp;Email ID: </strong>'+data.user.email+'<strong>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Phone No.: </strong>'+data.user.phone);
           $('#cbooks').html('<strong>&ensp;&nbsp;Added books in market: </strong>'+data.info.avbooks+'<strong>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Sold books: </strong>'+data.info.sbooks+'<strong>&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Books requested: </strong>'+data.info.reqbooks);
+          $('#profilepic').attr('src', data.user.profilepic);
           userinfo = data.user;
       }
   });
