@@ -150,7 +150,7 @@ function buyBook(cuser,data) {
       if (err) return console.error(err);
       console.log(book1.title + " is bought by "+book1.buyer);
     });
-  });avail
+  });
 }
 
 //-------------------------------------------------PASSPORT----------------------------------------------------------------------
