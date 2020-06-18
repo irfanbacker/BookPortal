@@ -10,6 +10,7 @@
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.4/croppie.css" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
@@ -137,7 +138,17 @@
               </form>
               </div>
               <div class="col-3 card-body" style="text-align: center;">
-                <img src="../dp.png" alt="Profile" class="img-thumbnail mx-auto d-block" style="width:auto;height:150px;">
+                <div class="row">
+                  <img id="cimg" class="img-thumbnail" style="width: 150px; height: 150px"></img>
+                </div>
+                <div class="row"><i style="font-size: 13px">Change default profile picture</i></br></div>
+                <div class="row"><input id="fin" type="file" onchange="previewFile()" style="font-size: 13px"></div>
+                <div class="row">
+                  <div id="cropbox" style="display: none"></div></br>
+                </div>
+                <div class="row">
+                  <button id="cropimg" type="submit" class="btn btn-primary btn-sm" onclick="return cropImg()" style="display: none">Crop</button>
+                </div>
               </div>
             </div>
           </div>
@@ -148,8 +159,8 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.4/croppie.js"></script>
 
     <!-- Icons -->
     <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
@@ -158,6 +169,42 @@
     </script>
 
     <script>
+
+      var cropbox = $('#cropbox').croppie({
+        viewport: {
+          width: 150,
+          height: 150,
+          type: 'square'
+        },
+        boundary: { width: 250, height: 250 }
+      });
+      function previewFile() {
+        $('#cropbox').show();
+        $('#cropimg').show();
+        const file = document.querySelector('#fin').files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+        // convert image file to base64 string
+          cropbox.croppie('bind', {
+            url: e.target.result,
+          });
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+      }
+      function cropImg() {
+        cropbox.croppie('result', {type: 'base64', size: { width: 250, height: 250 }}).then(function (img) {
+            $('#cropbox').hide();
+            $('#cropimg').hide();
+            dpcode = img;
+            $('#cimg').attr('src',img);
+        });
+        return false;
+      }
+
       var userinfo;
       var errs=[];
       var pchange = 0;
@@ -199,7 +246,8 @@
                 firstName: $('#firstName').val(),
                 lastName: $('#lastName').val(),
                 email: $('#email').val(),
-                phone: $('#phone').val()
+                phone: $('#phone').val(),
+                profilepic: $('#cimg').attr('src')
         };
         var promise = new Promise(function(resolve,reject){
           var terr=errs;
@@ -311,6 +359,7 @@
                 $('#username').val(data.user.username);
                 $('#email').val(data.user.email);
                 $('#phone').val(data.user.phone);
+                $('#cimg').attr('src', data.user.profilepic);
             }
         });
       });
