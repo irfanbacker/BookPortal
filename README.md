@@ -1,5 +1,7 @@
 # BookPortal
 Used books web portal in node.JS
+* Irfan Backer
+* Nuthan Kumar
 
 ## Dependencies:
 * node.Js
